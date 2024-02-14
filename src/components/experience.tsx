@@ -8,8 +8,7 @@ import {
   Float,
   MeshReflectorMaterial,
 } from "@react-three/drei";
-import { Suspense, useRef } from "react";
-import * as THREE from "three";
+import { useRef } from "react";
 
 export default function Experience() {
   const cubeRef = useRef<any>();
@@ -60,9 +59,15 @@ export default function Experience() {
       <mesh rotation-x={-Math.PI / 2} position-y={-1} castShadow receiveShadow>
         <planeGeometry args={[20, 20, 8, 8]} />
         {/* <meshStandardMaterial args={[{ color: "greenyellow", side: THREE.DoubleSide }]} /> */}
-        <MeshReflectorMaterial blur={[1000, 1000]} mixBlur={1} resolution={512} color={'greenyellow'} mirror={0.6} />
+        <MeshReflectorMaterial
+          blur={[1000, 1000]}
+          mixBlur={1}
+          resolution={512}
+          color={"greenyellow"}
+          mirror={0.6}
+        />
       </mesh>
-      <Float speed={5} floatIntensity={2}>
+      {/* <Float speed={5} floatIntensity={2}>
         <Text3D
           letterSpacing={-0.006}
           size={0.5}
@@ -73,6 +78,18 @@ export default function Experience() {
           Hello, my dear friend
           <meshStandardMaterial color="salmon" />
         </Text3D>
+      </Float> */}
+      <Float speed={5} floatIntensity={2}>
+        <Text
+          font="/bangers-v20-latin-regular.woff"
+          fontSize={1}
+          color="salmon"
+          position-y={2}
+          maxWidth={3}
+          textAlign="center"
+        >
+          WELCOME
+        </Text>
       </Float>
     </>
   );
