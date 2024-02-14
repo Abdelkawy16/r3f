@@ -1,62 +1,79 @@
-import { useFrame, extend, useThree } from "@react-three/fiber";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { useRef } from "react";
+import {
+  OrbitControls,
+  TransformControls,
+  PivotControls,
+  Html,
+  Text3D,
+  Text,
+  Float,
+  MeshReflectorMaterial,
+} from "@react-three/drei";
+import { Suspense, useRef } from "react";
 import * as THREE from "three";
-import CustomObject from "./custom-object";
-
-extend({ OrbitControls });
 
 export default function Experience() {
-  //   const [cubeRotation, setCubeRotation] = useState(Math.PI / 4);
   const cubeRef = useRef<any>();
-  const groupRef = useRef<any>();
-  const { camera, gl } = useThree();
-
-  useFrame((state, delta) => {
-    const angle = state.clock.elapsedTime;
-
-    // state.camera.position.x = Math.sin(angle) * 8;
-    // state.camera.position.z = Math.cos(angle) * 8;
-    // state.camera.lookAt(new THREE.Vector3());
-    // setCubeRotation(cubeRotation + 0.01);
-    cubeRef.current.rotation.y += delta;
-    // groupRef.current.rotation.y += delta;
-  });
+  const sphereRef = useRef<any>();
 
   return (
     <>
-      <orbitControls args={[camera, gl.domElement]} />
+      <OrbitControls makeDefault />
 
       <directionalLight position={[1, 2, 3]} intensity={1.5} />
 
       <ambientLight intensity={1.5} />
 
-      <group ref={groupRef}>
-        <mesh
-          ref={cubeRef}
-          rotation-y={Math.PI / 4}
-          position-x={2}
-          scale={1.5}
-          castShadow
-        >
+      <group>
+        <mesh position-x={2} scale={1.5} castShadow ref={cubeRef}>
           <boxGeometry />
           <meshStandardMaterial color="mediumpurple" />
         </mesh>
+        <TransformControls
+          object={cubeRef}
+          mode="translate" // scale, rotate
+        />
 
-        <mesh position-x={-2} castShadow>
-          <sphereGeometry />
-          <meshStandardMaterial color="orange" />
-        </mesh>
+        <PivotControls
+          anchor={[0, 0, 0]}
+          depthTest={false}
+          lineWidth={4}
+          // axisColors={[xColor, yColor, zColor]}
+          scale={100}
+          fixed={true}
+        >
+          <mesh position-x={-2} castShadow ref={sphereRef}>
+            <sphereGeometry />
+            <meshStandardMaterial color="orange" />
+            <Html
+              position={[1, 1, 0]}
+              wrapperClass="label"
+              center
+              distanceFactor={6}
+              occlude={[sphereRef, cubeRef]}
+            >
+              that is a shere
+            </Html>
+          </mesh>
+        </PivotControls>
       </group>
 
       <mesh rotation-x={-Math.PI / 2} position-y={-1} castShadow receiveShadow>
         <planeGeometry args={[20, 20, 8, 8]} />
-        <meshStandardMaterial
-          args={[{ color: "greenyellow", side: THREE.DoubleSide }]}
-        />
+        {/* <meshStandardMaterial args={[{ color: "greenyellow", side: THREE.DoubleSide }]} /> */}
+        <MeshReflectorMaterial blur={[1000, 1000]} mixBlur={1} resolution={512} color={'greenyellow'} mirror={0.6} />
       </mesh>
-
-      <CustomObject />
+      <Float speed={5} floatIntensity={2}>
+        <Text3D
+          letterSpacing={-0.006}
+          size={0.5}
+          font="/Inter_Bold.json"
+          position-y={2}
+          position-x={-2}
+        >
+          Hello, my dear friend
+          <meshStandardMaterial color="salmon" />
+        </Text3D>
+      </Float>
     </>
   );
 }

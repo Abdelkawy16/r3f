@@ -1,11 +1,7 @@
 "use client";
-
 import { Canvas } from "@react-three/fiber";
 import Experience from "./experience";
 import * as THREE from "three";
-// import { OrbitControls } from "@react-three/drei";
-
-// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 export default function MeshComponent() {
   return (
