@@ -82,7 +82,8 @@ export default function Experience() {
         // inclination={0}
         // azimuth={0.25}
       /> */}
-      <OrbitControls makeDefault />
+      //minPolarAngle={0} maxPolarAngle={Math.PI / 1.9} makeDefault
+      <OrbitControls makeDefault minPolarAngle={0} maxPolarAngle={Math.PI / 1.9}/>
       //#region Shadows
       {/* <SoftShadows focus={softShadowsConfig.focus} size={softShadowsConfig.size} samples={softShadowsConfig.samples}/> */}
       {/* <BakeShadows /> */}
@@ -131,6 +132,7 @@ export default function Experience() {
         shadow-type={THREE.PCFSoftShadowMap}
       />
       <ambientLight intensity={1.5} /> */}
+      <color attach="background" args={['skyblue']} />
       <Stage
         shadows={{ type: "contact", opacity: 0.2, blur: 3 }}
         environment="sunset"
