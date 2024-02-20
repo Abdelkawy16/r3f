@@ -7,6 +7,7 @@ export default function MeshComponent() {
   return (
     <>
       <Canvas
+      flat
         shadows
         gl={{ antialias: false }}
         dpr={[1, 1.5]}

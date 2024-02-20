@@ -1,42 +1,71 @@
-import { OrbitControls } from "@react-three/drei";
-import { Perf } from "r3f-perf";
+import {
+  OrbitControls,
+  useGLTF,
+  useTexture,
+  Center,
+  Sparkles,
+  shaderMaterial,
+} from "@react-three/drei";
+
 import * as THREE from "three";
-import Model from "./model";
-import { Suspense } from "react";
-import Placeholder from "./placeholder";
-import { Hamburger } from "./hamburger";
-import Fox from "./fox";
+
+import portalVertexShader from "@/shaders/portal/vertex.glsl";
+import portalFragmentShader from "@/shaders/portal/fragment.glsl";
+import { extend, useFrame } from "@react-three/fiber";
+import { useRef } from "react";
+
+// const PortalMaterial = shaderMaterial(
+//   {
+//     uTime: 0,
+//     uColorStart: new THREE.Color("#ffffff"),
+//     uColorEnd: new THREE.Color("#000000"),
+//   },
+//   portalVertexShader,
+//   portalFragmentShader
+// );
+
+// extend({ PortalMaterial });
 
 export default function Experience() {
+  const { nodes } = useGLTF("./model/portal.glb");
+  console.log(nodes);
+  const backedTexture = useTexture("./model/baked.jpg");
+  backedTexture.flipY = false;
+
+  // const portalMaterial = useRef<any>();
+
+  // useFrame((state, delta) => {
+  //   portalMaterial.current.uTime += delta;
+  // });
   return (
     <>
-      <Perf position="top-left" />
-
       <OrbitControls makeDefault />
-
-      <directionalLight
-        castShadow
-        position={[1, 2, 3]}
-        intensity={1.5}
-        shadow-normalBias={0.05}
-      />
-      <ambientLight intensity={0.5} />
-
-      <mesh
-        receiveShadow
-        position-y={-1}
-        rotation-x={-Math.PI * 0.5}
-        scale={10}
-      >
-        <planeGeometry />
-        <meshStandardMaterial color="greenyellow" side={THREE.DoubleSide} />
-      </mesh>
-
-      <Suspense fallback={<Placeholder position-y={0.5} scale={[2, 3, 2]} />}>
-        {/* <Model path="./models/hamburger.glb" scale={0.35} /> */}
-        <Hamburger scale={0.35} />
-      </Suspense>
-      <Fox scale={0.02} position={[-2.5, 0, 2.5]} />
+      <color attach="background" args={["#030202"]} />
+      <Center>
+        <mesh geometry={(nodes.baked as THREE.Mesh).geometry}>
+          <meshBasicMaterial map={backedTexture} map-flipY={false} />
+        </mesh>
+        <mesh
+          geometry={(nodes.poleLightA as THREE.Mesh).geometry}
+          position={(nodes.poleLightA as THREE.Mesh).position}
+        >
+          <meshBasicMaterial color="#ffffe5" />
+        </mesh>
+        <mesh
+          geometry={(nodes.poleLightB as THREE.Mesh).geometry}
+          position={(nodes.poleLightB as THREE.Mesh).position}
+        >
+          <meshBasicMaterial color="#ffffe5" />
+        </mesh>
+        <mesh
+          geometry={(nodes.portalLight as THREE.Mesh).geometry}
+          position={(nodes.portalLight as THREE.Mesh).position}
+          rotation={(nodes.portalLight as THREE.Mesh).rotation}
+        >
+          {/* <portalMaterial ref={ portalMaterial } /> */}
+        </mesh>
+        <Sparkles size={6} scale={[4, 2, 4]} position-y={1} speed={0.2} />
+      </Center>
     </>
   );
 }
