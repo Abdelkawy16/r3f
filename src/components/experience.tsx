@@ -1,71 +1,62 @@
-import {
-  OrbitControls,
-  useGLTF,
-  useTexture,
-  Center,
-  Sparkles,
-  shaderMaterial,
-} from "@react-three/drei";
-
-import * as THREE from "three";
-
-import portalVertexShader from "@/shaders/portal/vertex.glsl";
-import portalFragmentShader from "@/shaders/portal/fragment.glsl";
-import { extend, useFrame } from "@react-three/fiber";
+import { ThreeEvent, useFrame } from "@react-three/fiber";
+import { OrbitControls, useGLTF, meshBounds, useBVH } from "@react-three/drei";
 import { useRef } from "react";
 
-// const PortalMaterial = shaderMaterial(
-//   {
-//     uTime: 0,
-//     uColorStart: new THREE.Color("#ffffff"),
-//     uColorEnd: new THREE.Color("#000000"),
-//   },
-//   portalVertexShader,
-//   portalFragmentShader
-// );
-
-// extend({ PortalMaterial });
-
 export default function Experience() {
-  const { nodes } = useGLTF("./model/portal.glb");
-  console.log(nodes);
-  const backedTexture = useTexture("./model/baked.jpg");
-  backedTexture.flipY = false;
+  const cube = useRef<any>();
+  const model = useGLTF("./models/hamburger.glb");
 
-  // const portalMaterial = useRef<any>();
+  useFrame((state, delta) => {
+    cube.current.rotation.y += delta * 0.2;
+  });
 
-  // useFrame((state, delta) => {
-  //   portalMaterial.current.uTime += delta;
-  // });
+  function eventHandler(event: ThreeEvent<MouseEvent>): void {
+    console.log(event);
+    cube.current.material.color.set(`hsl(${Math.random() * 360}, 100%, 75%)`);
+  }
+
   return (
     <>
       <OrbitControls makeDefault />
-      <color attach="background" args={["#030202"]} />
-      <Center>
-        <mesh geometry={(nodes.baked as THREE.Mesh).geometry}>
-          <meshBasicMaterial map={backedTexture} map-flipY={false} />
-        </mesh>
-        <mesh
-          geometry={(nodes.poleLightA as THREE.Mesh).geometry}
-          position={(nodes.poleLightA as THREE.Mesh).position}
-        >
-          <meshBasicMaterial color="#ffffe5" />
-        </mesh>
-        <mesh
-          geometry={(nodes.poleLightB as THREE.Mesh).geometry}
-          position={(nodes.poleLightB as THREE.Mesh).position}
-        >
-          <meshBasicMaterial color="#ffffe5" />
-        </mesh>
-        <mesh
-          geometry={(nodes.portalLight as THREE.Mesh).geometry}
-          position={(nodes.portalLight as THREE.Mesh).position}
-          rotation={(nodes.portalLight as THREE.Mesh).rotation}
-        >
-          {/* <portalMaterial ref={ portalMaterial } /> */}
-        </mesh>
-        <Sparkles size={6} scale={[4, 2, 4]} position-y={1} speed={0.2} />
-      </Center>
+
+      <directionalLight position={[1, 2, 3]} intensity={1.5} />
+      <ambientLight intensity={0.5} />
+
+      <mesh position-x={-2} onClick={(e) => e.stopPropagation()}>
+        <sphereGeometry />
+        <meshStandardMaterial color="orange" />
+      </mesh>
+
+      <mesh
+        ref={cube}
+        raycast={meshBounds}
+        position-x={2}
+        scale={1.5}
+        onClick={eventHandler}
+        onPointerEnter={(e) => {
+          document.body.style.cursor = "pointer";
+        }}
+        onPointerLeave={(e) => {
+          document.body.style.cursor = "default";
+        }}
+      >
+        <boxGeometry />
+        <meshStandardMaterial color="mediumpurple" />
+      </mesh>
+
+      <mesh position-y={-1} rotation-x={-Math.PI * 0.5} scale={10}>
+        <planeGeometry />
+        <meshStandardMaterial color="greenyellow" />
+      </mesh>
+      <primitive
+        object={model.scene}
+        scale={0.25}
+        position-y={0.5}
+        onClick={(e: any) => {
+          console.log(e.object);
+          e.stopPropagation();
+        }}
+      />
     </>
   );
 }
